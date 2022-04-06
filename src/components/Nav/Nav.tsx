@@ -139,6 +139,10 @@ const Nav = () => {
               <Link to="/bond" className={'navLink ' + classes.link}>
                 Bond
               </Link>
+               {/*For creating Dashboard name on Navbar*/}
+               <Link to="/dashboard" className={'navLink ' + classes.link}>
+                Dashboard
+              </Link>
 
 
               

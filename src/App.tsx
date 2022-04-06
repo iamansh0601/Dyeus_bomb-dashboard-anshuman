@@ -26,13 +26,14 @@ const Xbomb = lazy(() => import('./views/Stake'));
 const Supply = lazy(() => import('./views/Supply'));
 // const SBS = lazy(() => import('./views/Sbs'));
 // const Liquidity = lazy(() => import('./views/Liquidity'));
+//To import dashboard page
+const Dashboard = lazy(() => import('./views/Dashboard'));
 
 const NoMatch = () => (
   <h3 style={{position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)'}}>
     URL Not Found. <a href="/">Go back home.</a>
   </h3>
 );
-
 const App: React.FC = () => {
   // Clear localStorage for mobile users
   if (typeof localStorage.version_app === 'undefined' || localStorage.version_app !== '1.1') {
@@ -65,6 +66,10 @@ const App: React.FC = () => {
             </Route>
             <Route path="/supply">
               <Supply />
+            </Route>
+            {/*To direct to dashboard page*/}
+            <Route path="/dashboard">
+              <Dashboard/>
             </Route>
             {/* <Route path="/sbs">
               <SBS />
