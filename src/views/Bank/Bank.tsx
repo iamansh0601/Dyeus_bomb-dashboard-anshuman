@@ -33,7 +33,10 @@ const Bank: React.FC = () => {
   useEffect(() => window.scrollTo(0, 0));
   const classes = useStyles();
   const {bankId} = useParams();
+  console.log(bankId);
+  console.log({bankId});
   const bank = useBank(bankId);
+  console.log(bank);
 
   const {account} = useWallet();
   const { onRedeem } = useRedeem(bank);
@@ -63,7 +66,7 @@ const Bank: React.FC = () => {
      else if (bank.depositTokenName.includes('BSHARE-BNB')) {
     vaultUrl = 'https://www.bomb.farm/#/bsc/vault/bomb-bshare-wbnb';
   }
-
+console.log(statsOnPool?.TVL);
   return account && bank ? (
     <>
       <PageHeader

@@ -6,19 +6,16 @@ import config from '../config';
 
 const useStatsForPool = (bank: Bank) => {
   const bombFinance = useBombFinance();
-
   const [poolAPRs, setPoolAPRs] = useState<PoolStats>();
-
+  console.log(bank);
   const fetchAPRsForPool = useCallback(async () => {
     setPoolAPRs(await bombFinance.getPoolAPRs(bank));
   }, [bombFinance, bank]);
-
   useEffect(() => {
     fetchAPRsForPool().catch((err) => console.error(`Failed to fetch APR info: ${err.stack}`));
     const refreshInterval = setInterval(fetchAPRsForPool, config.refreshInterval);
     return () => clearInterval(refreshInterval);
   }, [setPoolAPRs, bombFinance, fetchAPRsForPool]);
-
   return poolAPRs;
 };
 

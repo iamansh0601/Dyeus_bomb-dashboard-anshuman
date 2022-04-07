@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import Page from '../../components/Page';
 import { Helmet } from 'react-helmet';
 import { makeStyles } from '@material-ui/core/styles';
@@ -36,6 +36,12 @@ import useStakedBalanceOnBoardroom from '../../hooks/useStakedBalanceOnBoardroom
 import useStakedTokenPriceInDollars from '../../hooks/useStakedTokenPriceInDollars';
 import bondimg from '../../assets/img/xbomb.png';
 import useTokenBalance from '../../hooks/useTokenBalance';
+import useStatsForPool from '../../hooks/useStatsForPool';
+import Bank from '../Bank';
+import useBanks from '../../hooks/useBanks';
+import useBank from '../../hooks/useBank';
+import { useParams } from 'react-router-dom';
+import Footer from '../../components/Footer';
 const TITLE = 'bomb.money | Dashboard';
 const useStyles = makeStyles((theme) => ({
   gridItem: {
@@ -54,6 +60,35 @@ const Item = styled(Paper)(({ theme }) => ({
 }));
 
 const Dashboard = () => {
+  const [banks] = useBanks();
+  console.log(banks);
+  // const bankId = banks[2].contract;
+  // console.log(bankId);
+  // const bank = useBank(bankId);
+  // console.log(bank);
+  // const bank = banks[2];
+  // let statsOnPool = useStatsForPool(bank);
+  // console.log(statsOnPool);
+  // console.log(bank);
+  const activeBanks = banks.filter((bank) => !bank.finished);
+  let contBTCB;
+  activeBanks
+    .filter((bank) => bank.contract === 'BombBtcbLPBShareRewardPool')
+    //  bank.poolId === 1
+    .map((bank) => (contBTCB = bank));
+  // console.log(contBTCB);
+  let statsOnPoolBTCB = useStatsForPool(contBTCB);
+  console.log(statsOnPoolBTCB);
+
+  let contBNB;
+  activeBanks
+    .filter((bank) => bank.contract === 'BshareBnbLPBShareRewardPool')
+    //   bank.poolId === 0
+    .map((bank) => (contBNB = bank));
+  console.log(contBNB);
+  let statsOnPoolBNB = useStatsForPool(contBNB);
+  console.log(statsOnPoolBNB);
+
   const classes = useStyles();
   const currentEpoch = useCurrentEpoch();
   const TVL = useTotalValueLocked();
@@ -64,6 +99,7 @@ const Dashboard = () => {
   const tBondStats = useBondStats();
   const bondStat = useBondStats();
   const totalStaked = useTotalStakedOnBoardroom();
+  console.log(getDisplayBalance(totalStaked));
   const cashStat = useCashPriceInEstimatedTWAP();
   const earnings = useEarningsOnBoardroom();
   const stakedTokenPriceInDollars = useStakedTokenPriceInDollars('BSHARE', bombFinance.BSHARE);
@@ -71,13 +107,6 @@ const Dashboard = () => {
     () => (bombStats ? Number(bombStats.priceInDollars).toFixed(2) : null),
     [bombStats],
   );
-  // const tokenPriceInDollars = useMemo(
-  //   () =>
-  //     stakedTokenPriceInDollars
-  //       ? (Number(stakedTokenPriceInDollars) * Number(getDisplayBalance(stakedBalance))).toFixed(2).toString()
-  //       : null,
-  //   [stakedTokenPriceInDollars, stakedBalance],
-  // );
 
   const earnedInDollars = (Number(tokenPriceInDollars) * Number(getDisplayBalance(earnings))).toFixed(2);
 
@@ -91,6 +120,12 @@ const Dashboard = () => {
   } else {
     bomb = bombProd;
   }
+
+  // const depositToken = bank.depositToken;
+  // const depositTokenPrice = await this.getDepositTokenPriceInDollars(bank.depositTokenName, depositToken);
+  // const stakeInPool = await depositToken.balanceOf(bank.address);
+  // const TVLBSHARE = Number(depositTokenPrice) * Number(getDisplayBalance(stakeInPool, depositToken.decimal));
+
   const buyBombAddress =
     //  'https://pancakeswap.finance/swap?inputCurrency=0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c&outputCurrency=' +
     'https://app.bogged.finance/bsc/swap?tokenIn=0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c&tokenOut=' + bomb.address;
@@ -409,7 +444,7 @@ const Dashboard = () => {
                 <Grid item xs={12}>
                   <Item style={{ textAlign: 'right' }}>
                     <Typography>
-                      Total Stacked: <img style={{ width: '20px' }} src={BShareimg} /> {getDisplayBalance(totalStaked)}
+                      Total Staked: <img style={{ width: '20px' }} src={BShareimg} /> {getDisplayBalance(totalStaked)}
                     </Typography>
                   </Item>
                 </Grid>
@@ -423,7 +458,7 @@ const Dashboard = () => {
                   <Grid item xs={2}>
                     <Item>Your Stake:</Item>
                     <Item> {getDisplayBalance(stakedBalance)}</Item>
-                    <Item>{`≈ $${tokenPriceInDollars}`}</Item>
+                    <Item>{`≈ $${stakedBalance * bSharePriceInDollars}`}</Item>
                   </Grid>
                   <Grid item xs={2}>
                     <Item>Earned:</Item>
@@ -471,7 +506,7 @@ const Dashboard = () => {
                   </Grid>
                   <Grid item xs={7}>
                     <Item style={{ textAlign: 'right' }}>
-                      TVL: <CountUp style={{ fontSize: '20px' }} end={TVL} separator="," prefix="$" />
+                      <Typography>TVL: ${statsOnPoolBTCB?.TVL}</Typography>
                     </Item>
                   </Grid>
                 </Grid>
@@ -482,7 +517,7 @@ const Dashboard = () => {
                 <Grid container spacing={2}>
                   <Grid item xs={2}>
                     <Item>Daily Returns</Item>
-                    <Item></Item>
+                    <Item>{statsOnPoolBTCB?.dailyAPR}</Item>
                   </Grid>
                   <Grid item xs={2}>
                     <Item>Your Stake:</Item>
@@ -520,7 +555,7 @@ const Dashboard = () => {
                   </Grid>
                   <Grid item xs={7}>
                     <Item style={{ textAlign: 'right' }}>
-                      TVL: <CountUp style={{ fontSize: '20px' }} end={TVL} separator="," prefix="$" />
+                      <Typography>TVL: ${statsOnPoolBNB?.TVL}</Typography>
                     </Item>
                   </Grid>
                 </Grid>
@@ -532,7 +567,7 @@ const Dashboard = () => {
                 <Grid container spacing={2}>
                   <Grid item xs={2}>
                     <Item>Daily Returns</Item>
-                    <Item></Item>
+                    <Item>{statsOnPoolBNB?.dailyAPR}</Item>
                   </Grid>
                   <Grid item xs={2}>
                     <Item>Your Stake:</Item>
@@ -613,14 +648,12 @@ const Dashboard = () => {
                   </Grid>
                 </Grid>
               </Box>
-              
 
               <hr />
             </Item>
           </Grid>
         </Grid>
       </Box>
-      
     </Page>
   );
 };

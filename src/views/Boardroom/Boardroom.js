@@ -56,6 +56,7 @@ const Boardroom = () => {
   const currentEpoch = useCurrentEpoch();
   const cashStat = useCashPriceInEstimatedTWAP();
   const totalStaked = useTotalStakedOnBoardroom();
+  console.log(getDisplayBalance(totalStaked));
   const boardroomAPR = useFetchBoardroomAPR();
   const canClaimReward = useClaimRewardCheck();
   const canWithdraw = useWithdrawCheck();

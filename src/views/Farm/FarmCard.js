@@ -37,7 +37,7 @@ const FarmCard = ({bank}) => {
         </CardContent>
         <CardActions style={{justifyContent: 'flex-end'}}>
           <Button className="shinyButtonSecondary" component={Link} to={`/farm/${bank.contract}`}>
-            View
+          View
           </Button>
         </CardActions>
       </Card>
