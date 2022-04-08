@@ -44,6 +44,7 @@ import useBanks from '../../hooks/useBanks';
 import useBank from '../../hooks/useBank';
 import { useParams } from 'react-router-dom';
 import Footer from '../../components/Footer';
+import useShareStats from '../../hooks/usebShareStats';
 const TITLE = 'bomb.money | Dashboard';
 const useStyles = makeStyles((theme) => ({
   gridItem: {
@@ -62,6 +63,15 @@ const Item = styled(Paper)(({ theme }) => ({
 }));
 
 const Dashboard = () => {
+
+  const bombFarmsStats = useShareStats();
+  const bhsarePriceInFarms = useMemo(()=>
+  (bombFarmsStats ? Number(bombFarmsStats.priceInDollars).toFixed(2) : null),
+  [bombFarmsStats],
+  );
+console.log(bhsarePriceInFarms);
+
+
   const [banks] = useBanks();
   console.log(banks);
   // const bankId = banks[2].contract;
@@ -110,6 +120,7 @@ const Dashboard = () => {
     [bombStats],
   );
 
+ 
   const earnedInDollars = (Number(tokenPriceInDollars) * Number(getDisplayBalance(earnings))).toFixed(2);
 
   const scalingFactor = useMemo(() => (cashStat ? Number(cashStat.priceInDollars).toFixed(4) : null), [cashStat]);
@@ -122,13 +133,16 @@ const Dashboard = () => {
   } else {
     bomb = bombProd;
   }
-//Stake and earning BOMBBTCB
-const stakedBalanceBTCB = useStakedBalance(banks[2].contract, banks[2].poolId);
-const earningsBTCB = useEarnings(banks[2].contract, banks[2].earnTokenName, banks[2].poolId);
-//State and Earning BsharBNB
-const stakedBalanceBNB = useStakedBalance(banks[4].contract, banks[4].poolId);
-const earningsBNB = useEarnings(banks[4].contract, banks[4].earnTokenName, banks[4].poolId);
-
+  //Stake and earning BOMBBTCB
+  const stakedBalanceBTCB = useStakedBalance(banks[2].contract, banks[2].poolId);
+  const earningsBTCB = useEarnings(banks[2].contract, banks[2].earnTokenName, banks[2].poolId);
+  //State and Earning BsharBNB
+  const stakedBalanceBNB = useStakedBalance(banks[4].contract, banks[4].poolId);
+  const earningsBNB = useEarnings(banks[4].contract, banks[4].earnTokenName, banks[4].poolId);
+  //Earning in dollars
+  const earnedInDollarsBTCB = (Number(bhsarePriceInFarms) * Number(getDisplayBalance(earningsBTCB))).toFixed(2);
+  const earnedInDollarsBNB = (Number(bhsarePriceInFarms) * Number(getDisplayBalance(earningsBNB))).toFixed(2);
+  
   const buyBombAddress =
     //  'https://pancakeswap.finance/swap?inputCurrency=0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c&outputCurrency=' +
     'https://app.bogged.finance/bsc/swap?tokenIn=0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c&tokenOut=' + bomb.address;
@@ -461,7 +475,7 @@ const earningsBNB = useEarnings(banks[4].contract, banks[4].earnTokenName, banks
                   <Grid item xs={2}>
                     <Item>Your Stake:</Item>
                     <Item> {getDisplayBalance(stakedBalance)}</Item>
-                    <Item>{`≈ $${stakedBalance* bSharePriceInDollars}`}</Item>
+                    <Item>{`≈ $${stakedBalance * bSharePriceInDollars}`}</Item>
                   </Grid>
                   <Grid item xs={2}>
                     <Item>Earned:</Item>
@@ -524,15 +538,13 @@ const earningsBNB = useEarnings(banks[4].contract, banks[4].earnTokenName, banks
                   </Grid>
                   <Grid item xs={2}>
                     <Item>Your Stake:</Item>
-                    <Item>
-                       {getDisplayBalance(stakedBalanceBTCB, banks[2].depositToken.decimal)}
-                      </Item> 
-                      <Item> </Item>
+                    <Item>{getDisplayBalance(stakedBalanceBTCB, banks[2].depositToken.decimal)}</Item>
+                    <Item> </Item>
                   </Grid>
                   <Grid item xs={2}>
                     <Item>Earned:</Item>
-                     <Item>{getDisplayBalance(earningsBTCB)}</Item>
-                     <Item></Item>
+                    <Item>{getDisplayBalance(earningsBTCB)}</Item>
+                    <Item> ${earnedInDollarsBTCB}</Item>
                   </Grid>
                   {/* <Grid item xs={4}>
                     <Item styel = {{}} >Deposit</Item>
@@ -581,6 +593,7 @@ const earningsBNB = useEarnings(banks[4].contract, banks[4].earnTokenName, banks
                   <Grid item xs={2}>
                     <Item>Earned:</Item>
                     <Item>{getDisplayBalance(earningsBNB)}</Item>
+                    <Item> ${earnedInDollarsBNB}</Item>
                     {/* <Item> {getDisplayBalance(earnings)} </Item>
                       <Item>{`≈ $${earnedInDollars}`}  </Item> */}
                   </Grid>
