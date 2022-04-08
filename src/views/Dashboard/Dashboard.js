@@ -37,7 +37,9 @@ import useStakedTokenPriceInDollars from '../../hooks/useStakedTokenPriceInDolla
 import bondimg from '../../assets/img/xbomb.png';
 import useTokenBalance from '../../hooks/useTokenBalance';
 import useStatsForPool from '../../hooks/useStatsForPool';
+import useStakedBalance from '../../hooks/useStakedBalance';
 import Bank from '../Bank';
+import useEarnings from '../../hooks/useEarnings';
 import useBanks from '../../hooks/useBanks';
 import useBank from '../../hooks/useBank';
 import { useParams } from 'react-router-dom';
@@ -120,11 +122,12 @@ const Dashboard = () => {
   } else {
     bomb = bombProd;
   }
-
-  // const depositToken = bank.depositToken;
-  // const depositTokenPrice = await this.getDepositTokenPriceInDollars(bank.depositTokenName, depositToken);
-  // const stakeInPool = await depositToken.balanceOf(bank.address);
-  // const TVLBSHARE = Number(depositTokenPrice) * Number(getDisplayBalance(stakeInPool, depositToken.decimal));
+//Stake and earning BOMBBTCB
+const stakedBalanceBTCB = useStakedBalance(banks[2].contract, banks[2].poolId);
+const earningsBTCB = useEarnings(banks[2].contract, banks[2].earnTokenName, banks[2].poolId);
+//State and Earning BsharBNB
+const stakedBalanceBNB = useStakedBalance(banks[4].contract, banks[4].poolId);
+const earningsBNB = useEarnings(banks[4].contract, banks[4].earnTokenName, banks[4].poolId);
 
   const buyBombAddress =
     //  'https://pancakeswap.finance/swap?inputCurrency=0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c&outputCurrency=' +
@@ -458,7 +461,7 @@ const Dashboard = () => {
                   <Grid item xs={2}>
                     <Item>Your Stake:</Item>
                     <Item> {getDisplayBalance(stakedBalance)}</Item>
-                    <Item>{`≈ $${stakedBalance * bSharePriceInDollars}`}</Item>
+                    <Item>{`≈ $${stakedBalance* bSharePriceInDollars}`}</Item>
                   </Grid>
                   <Grid item xs={2}>
                     <Item>Earned:</Item>
@@ -521,13 +524,15 @@ const Dashboard = () => {
                   </Grid>
                   <Grid item xs={2}>
                     <Item>Your Stake:</Item>
-                    {/* <Item> {getDisplayBalance(stakedBalance)}</Item> 
-                   <Item>{`≈ $${tokenPriceInDollars}`}</Item>  */}
+                    <Item>
+                       {getDisplayBalance(stakedBalanceBTCB, banks[2].depositToken.decimal)}
+                      </Item> 
+                      <Item> </Item>
                   </Grid>
                   <Grid item xs={2}>
                     <Item>Earned:</Item>
-                    {/* <Item> {getDisplayBalance(earnings)} </Item>
-                      <Item>{`≈ $${earnedInDollars}`}  </Item> */}
+                     <Item>{getDisplayBalance(earningsBTCB)}</Item>
+                     <Item></Item>
                   </Grid>
                   {/* <Grid item xs={4}>
                     <Item styel = {{}} >Deposit</Item>
@@ -571,11 +576,11 @@ const Dashboard = () => {
                   </Grid>
                   <Grid item xs={2}>
                     <Item>Your Stake:</Item>
-                    {/* <Item> {getDisplayBalance(stakedBalance)}</Item> 
-                   <Item>{`≈ $${tokenPriceInDollars}`}</Item>  */}
+                    <Item>{getDisplayBalance(stakedBalanceBNB, banks[4].depositToken.decimal)}</Item>
                   </Grid>
                   <Grid item xs={2}>
                     <Item>Earned:</Item>
+                    <Item>{getDisplayBalance(earningsBNB)}</Item>
                     {/* <Item> {getDisplayBalance(earnings)} </Item>
                       <Item>{`≈ $${earnedInDollars}`}  </Item> */}
                   </Grid>
